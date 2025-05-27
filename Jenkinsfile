@@ -15,13 +15,15 @@ pipeline {
 
         stage('Set Minikube Docker Env') {
             steps {
-                sh '/opt/homebrew/bin/minikube docker-env > docker_env.sh'
+                // Bash uyumlu ortam değişkenleri alınıyor
+                sh '/opt/homebrew/bin/minikube docker-env --shell bash > docker_env.sh'
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh '. ./docker_env.sh && /opt/homebrew/bin/docker build -t my-node-app .'
+                // Ortam değişkenlerini yükle ve docker build yap
+                sh '. ./docker_env.sh && docker build -t my-node-app .'
             }
         }
 
@@ -32,5 +34,4 @@ pipeline {
         }
     }
 }
-
 
