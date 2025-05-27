@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-web
+  template:
+    metadata:
+      labels:
+        app: node-web
+    spec:
+      containers:
+        - name: node-web
+          image: my-node-app:latest
+          imagePullPolicy: Never  # local image kullanmak için önemli
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REDIS_HOST
+              value: "redis"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-web
+spec:
+  selector:
+    app: node-web
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: NodePort  # Minikube için gerekli
+
