@@ -14,23 +14,11 @@ spec:
     spec:
       containers:
         - name: node-web
-          image: my-node-app:latest
-          imagePullPolicy: Never  # local image kullanmak için önemli
+          image: my-node-app:BUILD_TAG
+          imagePullPolicy: Never
           ports:
             - containerPort: 3000
           env:
             - name: REDIS_HOST
               value: "redis"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: node-web
-spec:
-  selector:
-    app: node-web
-  ports:
-    - port: 3000
-      targetPort: 3000
-  type: NodePort  # Minikube için gerekli
 

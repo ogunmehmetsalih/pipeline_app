@@ -15,23 +15,33 @@ pipeline {
 
         stage('Set Minikube Docker Env') {
             steps {
-                // Bash uyumlu ortam değişkenleri alınıyor
                 sh '/opt/homebrew/bin/minikube docker-env --shell bash > docker_env.sh'
             }
         }
 
-        stage('Docker Build') {
+        stage('Docker Build & Tag') {
             steps {
-                // Ortam değişkenlerini yükle ve docker build yap
-                sh '. ./docker_env.sh && docker build -t my-node-app .'
+                script {
+                    env.IMAGE_TAG = "my-node-app:${env.BUILD_NUMBER}"
+                    sh '. ./docker_env.sh && docker build -t ' + env.IMAGE_TAG + ' .'
+                }
+            }
+        }
+
+        stage('Prepare Deployment File') {
+            steps {
+                script {
+                    sh 'sed "s/BUILD_TAG/${BUILD_NUMBER}/g" k8s/web-deployment.yaml > k8s/web-deployment-gen.yaml'
+                }
             }
         }
 
         stage('Kubernetes Deploy') {
             steps {
-                sh '/opt/homebrew/bin/kubectl apply -f k8s/'
+                sh '/opt/homebrew/bin/kubectl apply -f k8s/redis-deployment.yaml'
+                sh '/opt/homebrew/bin/kubectl apply -f k8s/web-deployment-gen.yaml'
+                sh '/opt/homebrew/bin/kubectl apply -f k8s/service.yaml'
             }
         }
     }
 }
-
