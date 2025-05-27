@@ -10,7 +10,7 @@ app.get("/", async (req, res) => {
   let visits = await client.get("visits");
   visits = visits ? parseInt(visits) + 1 : 1;
   await client.set("visits", visits);
-  res.send(`Ziyaret sayısı: ${visits}`);
+  res.send(`Ziyaret sayısı: ${visits} — bu güncelleme CI/CD ile geldi!`);
 });
 
 app.listen(3000, () => {
